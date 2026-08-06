@@ -1,0 +1,8 @@
+streamlit
+opencv-python-headless
+pydicom
+torch
+torchvision
+matplotlib
+Pillow
+pandas
