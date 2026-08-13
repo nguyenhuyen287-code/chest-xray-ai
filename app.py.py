@@ -107,7 +107,7 @@ def generate_pdf_report(results, uploaded_filename, top_prediction, doctor_notes
     # Chữ ký
     pdf.set_font("Arial", 'B', 10)
 # ... existing code ...
-        st.dataframe(df[["Dấu hiệu Bệnh lý", "Xác suất (%)", "Trạng thái"]], use_container_width=True, height=250)
+    st.dataframe(df[["Dấu hiệu Bệnh lý", "Xác suất (%)", "Trạng thái"]], use_container_width=True, height=250)
         
         # --- KHU VỰC DÀNH CHO BÁC SĨ ---
         st.markdown("---")
