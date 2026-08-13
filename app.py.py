@@ -55,7 +55,10 @@ def run_ai_inference(img):
     # Đảm bảo ảnh là ảnh xám (2D) trước khi chuyển sang BGR để vẽ khung màu
     if len(img.shape) > 2:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        
+    # Ép kiểu ảnh DICOM về chuẩn 8-bit để tránh lỗi vẽ khung
+    img = img.astype(np.float32)
+    img = (img - np.min(img)) / (np.max(img) - np.min(img) + 1e-5) * 255.0
+    img = img.astype(np.uint8)    
     img_bbox = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     h, w = img.shape
     
