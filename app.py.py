@@ -106,7 +106,7 @@ if uploaded_file is not None:
                 img_array = np.array(Image.open(uploaded_file).convert('L'))
                 
             # Gọi hàm AI để lấy kết quả bệnh lý VÀ ảnh đã vẽ khung
-            results, img_bbox = run_ai_inference(img_array)
+                results, img_bbox = run_ai_inference(img_array)
         
    # --- TÍNH NĂNG: HIỂN THỊ SONG SONG 2 ẢNH VÀ ĐIỀU CHỈNH KÍCH THƯỚC ---
 st.markdown("### 🔍 So sánh Hình ảnh X-quang")
