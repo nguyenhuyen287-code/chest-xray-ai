@@ -155,17 +155,6 @@ if uploaded_file is not None:
     st.markdown("<div class='sub-header'>👨‍⚕️ TƯƠNG TÁC LÂM SÀNG (DÀNH CHO BÁC SĨ)</div>", unsafe_allow_html=True)
     doctor_notes = st.text_area("Nhập ý kiến chẩn đoán chuyên môn của Bác sĩ...", placeholder="Ví dụ: Bệnh nhân có tiền sử ho khan, hình ảnh X-quang cho thấy...")
 
-    if st.button("📄 Tạo Báo Cáo PDF Chẩn Đoán"):
-        top_prediction = max(results.items(), key=lambda x: x[1])
-        pdf_output_filename = generate_pdf_report(results, uploaded_file.name, top_prediction, doctor_notes)
-        
-        with open(pdf_output_filename, "rb") as pdf_file:
-            st.download_button(
-                label="📥 Tải xuống File PDF Báo Cáo Bệnh Nhân",
-                data=pdf_file,
-                file_name="Bao_Cao_Y_Te_XQuang.pdf",
-                mime="application/pdf"
-            )
 # 3. HÀM TẠO REPORT PDF (CHUẨN MẪU BỆNH VIỆT - HÀN)
 # ... existing code ...
 def footer(self):
@@ -264,3 +253,14 @@ def generate_pdf_report(results, uploaded_filename, top_prediction, doctor_notes
     pdf.output(pdf_output_path)
     return pdf_output_path
     
+if st.button("📄 Tạo Báo Cáo PDF Chẩn Đoán"):
+    top_prediction = max(results.items(), key=lambda x: x[1])
+    pdf_output_filename = generate_pdf_report(results, uploaded_file.name, top_prediction, doctor_notes)
+    
+    with open(pdf_output_filename, "rb") as pdf_file:
+        st.download_button(
+            label="📥 Tải xuống File PDF Báo Cáo Bệnh Nhân",
+            data=pdf_file,
+            file_name="Bao_Cao_Y_Te_XQuang.pdf",
+            mime="application/pdf"
+        )
