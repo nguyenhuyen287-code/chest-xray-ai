@@ -108,8 +108,48 @@ if uploaded_file is not None:
         # Gọi hàm AI để lấy kết quả bệnh lý VÀ ảnh đã vẽ khung
         results, img_bbox = run_ai_inference(img_array)
         
-        # Hiển thị ảnh X-quang ĐÃ VẼ KHUNG lên màn hình cho Bác sĩ xem
-        st.image(img_bbox, caption="Ảnh X-quang đầu vào (đã phân tích)", use_container_width=True, clamp=True)
+   # --- TÍNH NĂNG: HIỂN THỊ SONG SONG 2 ẢNH VÀ ĐIỀU CHỈNH KÍCH THƯỚC ---
+st.markdown("### 🔍 So sánh Hình ảnh X-quang")
+img_width = st.slider("Điều chỉnh kích thước hiển thị hình ảnh:", min_value=200, max_value=1000, value=500, step=50)
+
+col1, col2 = st.columns(2)
+with col1:
+    st.markdown("**1. Hình ảnh gốc**")
+    st.image(img_array, caption="Ảnh đầu vào", width=img_width, clamp=True)
+    
+with col2:
+    st.markdown("**2. Hình ảnh AI phân tích tổn thương**")
+    st.image(img_bbox, caption="Ảnh có định vị vùng nghi ngờ", width=img_width)
+    
+st.markdown("---")
+st.markdown("### 📊 Bảng Chi Tiết Kết Quả Phân Tích AI")
+
+# --- TÍNH NĂNG: TÔ MÀU BẢNG KẾT QUẢ THEO MỨC ĐỘ ---
+def color_coding(val):
+    if isinstance(val, float):
+        if val > 70:
+            return 'background-color: #ffcccc; color: #990000; font-weight: bold;' # Đỏ: Nguy cơ cao
+        elif val > 40:
+            return 'background-color: #ffe680; color: #996600; font-weight: bold;' # Vàng: Nguy cơ trung bình
+        else:
+            return 'background-color: #d9ffd9; color: #006600;' # Xanh lá: Bình thường
+    return ''
+
+table_data = []
+for disease, prob in results.items():
+    p_val = prob * 100
+    if p_val > 70:
+        status = "Nguy cơ cao (Bất thường)"
+    elif p_val > 40:
+        status = "Nguy cơ trung bình"
+    else:
+        status = "Bình thường"
+        
+    table_data.append([disease, round(p_val, 2), status])
+
+df = pd.DataFrame(table_data, columns=["Dấu hiệu Bệnh lý", "Xác suất (%)", "Trạng thái"])
+styled_df = df.style.applymap(color_coding, subset=["Xác suất (%)"])
+st.dataframe(styled_df, use_container_width=True, height=300)
 
 # ==========================================
 # 3. HÀM TẠO REPORT PDF (CHUẨN MẪU BỆNH VIỆT - HÀN)
@@ -161,7 +201,54 @@ if "results" in locals():
     st.markdown("<div class='sub-header'>👨‍⚕️ TƯƠNG TÁC LÂM SÀNG (DÀNH CHO BÁC SĨ)</div>", unsafe_allow_html=True)
     doctor_notes = st.text_area("Nhập ý kiến chẩn đoán chuyên môn của Bác sĩ (Kết luận này sẽ được in trực tiếp vào Báo cáo PDF):", 
                                 placeholder="Ví dụ: Bệnh nhân có tiền sử ho khan, hình ảnh X-quang cho thấy...")
+
+    from fpdf import FPDF
+
+class MedicalPDFReport(FPDF):
+    def header(self):
+        self.set_font('Arial', 'B', 14)
+        self.cell(0, 10, 'BAO CAO KET QUA CHAN DOAN HINH ANH Y KHOA', 0, 1, 'C')
+        self.set_font('Arial', 'I', 10)
+        self.cell(0, 6, 'Benh vien Da nang - Khoa Chan doan Hinh anh', 0, 1, 'C')
+        self.ln(5)
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font('Arial', 'I', 8)
+        self.cell(0, 10, f'Trang {self.page_no()} | He thong AI Diagnostic System', 0, 0, 'C')
+
+def generate_pdf_report(results, uploaded_filename, top_prediction, doctor_notes):
+    pdf = MedicalPDFReport()
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(0, 8, f"Thong tin file: {uploaded_filename}", 0, 1)
+    pdf.cell(0, 8, f"Chan doan hang dau: {top_prediction}", 0, 1)
+    pdf.ln(5)
     
+    pdf.set_font("Arial", 'B', 11)
+    pdf.cell(0, 6, "Y KIEN CHAN DOAN CUA BAC SI CHUYEN KHOA:", 0, 1)
+    pdf.set_font("Arial", '', 10)
+    clean_notes = remove_accents(doctor_notes) if doctor_notes else "Khong co y kien bo sung."
+    pdf.multi_cell(0, 5, clean_notes)
+    pdf.ln(10)
+    
+    pdf.set_font("Arial", 'B', 11)
+    pdf.cell(0, 8, "BANG CHI TIET KET QUA AI PHAN TICH:", 0, 1)
+    pdf.set_font("Arial", 'B', 10)
+    pdf.cell(100, 7, "Dau hieu Benh ly", 1)
+    pdf.cell(40, 7, "Xac suat (%)", 1, 0, 'C')
+    pdf.cell(50, 7, "Trang thai", 1, 1, 'C')
+    
+    pdf.set_font("Arial", '', 10)
+    for disease, prob in results.items():
+        status = "Bat thuong" if prob > 0.5 else "Binh thuong"
+        pdf.cell(100, 6, remove_accents(disease), 1)
+        pdf.cell(40, 6, f"{prob * 100:.2f}%", 1, 0, 'C')
+        pdf.cell(50, 6, status, 1, 1, 'C')
+        
+    pdf_output_path = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf").name
+    pdf.output(pdf_output_path)
+    return pdf_output_path
     # --- TÍCH HỢP XUẤT REPORT PDF NGAY LẬP TỨC ---
     st.markdown("---")
     st.subheader("📥 Xuất Phiếu Kết Quả Lâm Sàng")
