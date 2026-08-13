@@ -108,7 +108,7 @@ if uploaded_file is not None:
         cv2.putText(img_bbox, f"{main_disease} {results[main_disease]*100:.0f}%", (x1, y1-10), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
     
-    return results, img_bbox
+        return results, img_bbox
 
 # ==========================================
 # 3. HÀM TẠO REPORT PDF (CHUẨN MẪU BỆNH VIỆT - HÀN)
