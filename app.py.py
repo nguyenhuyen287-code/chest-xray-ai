@@ -106,15 +106,15 @@ def generate_pdf_report(results, uploaded_filename, top_prediction, doctor_notes
     
     # Chữ ký
     pdf.set_font("Arial", 'B', 10)
-# --- TẠO BẢNG DỮ LIỆU TỪ KẾT QUẢ AI ---
+    
+if "results" in locals():
     table_data = []
     for disease, prob in results.items():
         status = "Bất thường" if prob > 0.5 else "Bình thường"
         table_data.append([disease, prob * 100, status])
         
-        df = pd.DataFrame(table_data, columns=["Dấu hiệu Bệnh lý", "Xác suất (%)", "Trạng thái"])
-        st.dataframe(df[["Dấu hiệu Bệnh lý", "Xác suất (%)", "Trạng thái"]], use_container_width=True, height=250)
-                
+    df = pd.DataFrame(table_data, columns=["Dấu hiệu Bệnh lý", "Xác suất (%)", "Trạng thái"])
+    st.dataframe(df[["Dấu hiệu Bệnh lý", "Xác suất (%)", "Trạng thái"]], use_container_width=True, height=250)
         # --- KHU VỰC DÀNH CHO BÁC SĨ ---
         st.markdown("---")
         st.markdown("<div class='sub-header'>👨‍⚕️ TƯƠNG TÁC LÂM SÀNG (DÀNH CHO BÁC SĨ)</div>", unsafe_allow_html=True)
