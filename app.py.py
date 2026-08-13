@@ -154,10 +154,10 @@ st.dataframe(styled_df, use_container_width=True, height=300)
 # ==========================================
 # 3. HÀM TẠO REPORT PDF (CHUẨN MẪU BỆNH VIỆT - HÀN)
 # ... existing code ...
-    def footer(self):
-        self.set_y(-15)
-        self.set_font("Arial", 'I', 8)
-        self.cell(0, 10, f"Trang {self.page_no()} | AI Diagnostic System - KTYD Bách Khoa", 0, 0, 'C')
+def footer(self):
+    self.set_y(-15)
+    self.set_font("Arial", 'I', 8)
+    self.cell(0, 10, f"Trang {self.page_no()} | AI Diagnostic System - KTYD Bách Khoa", 0, 0, 'C')
 
 def generate_pdf_report(results, uploaded_filename, top_prediction, doctor_notes):
     pdf = MedicalPDFReport()
