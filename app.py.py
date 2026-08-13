@@ -146,7 +146,7 @@ if uploaded_file is not None:
         table_data.append([disease, round(p_val, 2), status])
 
     df = pd.DataFrame(table_data, columns=["Dấu hiệu Bệnh lý", "Xác suất (%)", "Trạng thái"])
-    styled_df = df.style.applymap(color_coding, subset=["Xác suất (%)"])
+    styled_df = df.style.map(color_coding, subset=["Xác suất (%)"])
     st.dataframe(styled_df, use_container_width=True, height=300)
 
 # ==========================================
