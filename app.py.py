@@ -173,7 +173,7 @@ def generate_pdf_report(results, uploaded_filename, top_prediction, doctor_notes
     if top_prediction[1] < 0.5:
         pdf.multi_cell(0, 5, "Mô hình AI nhận diện phổi bình thường, không có dấu hiệu bệnh lý nguy hiểm. Đề nghị Bác sĩ kiểm tra lại.")
     else:
-        pdf.multi_cell(0, 5, f"AI nhận diện dấu hiệu cao nhất: {top_prediction[0]} (Độ tin cậy: {top_prediction[1]*100:.1f}%). Hệ thống đã kích hoạt YOLOv5 khoanh vùng tổn thương. Đề nghị Bác sĩ kiểm tra chi tiết hình ảnh.")
+        pdf.multi_cell(0, 5, f"AI nhận diện dấu hiệu cao nhất: {remove_accents(top_prediction[0])} (Độ tin cậy: {top_prediction[1]*100:.1f}%). Hệ thống đã kích hoạt")
     pdf.ln(5)
     
     # --- THÊM PHẦN Ý KIẾN CỦA BÁC SĨ ---
@@ -225,7 +225,7 @@ def generate_pdf_report(results, uploaded_filename, top_prediction, doctor_notes
     pdf.add_page()
     pdf.set_font("Arial", 'B', 12)
     pdf.cell(0, 8, f"Thong tin file: {uploaded_filename}", 0, 1)
-    pdf.cell(0, 8, f"Chan doan hang dau: {top_prediction}", 0, 1)
+    pdf.cell(0, 8, f"Chan doan hang dau: {remove_accents(str(top_prediction))}", 0, 1)
     pdf.ln(5)
     
     pdf.set_font("Arial", 'B', 11)
