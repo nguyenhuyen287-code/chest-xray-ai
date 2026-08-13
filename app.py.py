@@ -120,7 +120,13 @@ st.markdown("---")
 st.subheader("📥 Xuất Phiếu Kết Quả Lâm Sàng")
 top_disease = max(results.items(), key=lambda x: x[1])
         
-if st.button("📄 Tạo File Báo Cáo PDF Chuẩn Bệnh Viện"):
+if st.button("Tạo File Báo Cáo PDF Chuẩn Bệnh Viện"):
     pdf_path = generate_pdf_report(results, uploaded_file.name, top_disease, doctor_notes)
     with open(pdf_path, "rb") as f:
-# ... existing code ...
+        # Dòng dưới đây bắt buộc phải thụt lề (1 lần Tab) so với chữ 'with'
+        st.download_button(
+            label="⬇️ Tải xuống Báo Cáo PDF",
+            data=f,
+            file_name="Bao_Cao_X_Quang_Phoi.pdf",
+            mime="application/pdf"
+        )
