@@ -207,7 +207,7 @@ class MedicalPDFReport(FPDF):
         self.set_font('Arial', 'B', 14)
         self.cell(0, 10, 'BAO CAO KET QUA CHAN DOAN HINH ANH Y KHOA', 0, 1, 'C')
         self.set_font('Arial', 'I', 10)
-        self.cell(0, 6, 'Benh vien Da nang - Khoa Chan doan Hinh anh', 0, 1, 'C')
+        self.cell(0, 6, 'Benh vien Viet - Han Da nang - Khoa Chan doan Hinh anh', 0, 1, 'C')
         self.ln(5)
 
     def footer(self):
@@ -247,21 +247,17 @@ def generate_pdf_report(results, uploaded_filename, top_prediction, doctor_notes
     pdf_output_path = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf").name
     pdf.output(pdf_output_path)
     return pdf_output_path
-    # --- TÍCH HỢP XUẤT REPORT PDF NGAY LẬP TỨC ---
+    doctor_notes = st.text_area("Nhập ý kiến chẩn đoán chuyên môn của Bác sĩ...", placeholder="Ví dụ: Bệnh nhân có tiền sử ho khan...")
+    
+    # --- CHÈN ĐOẠN CODE XUẤT PDF VÀO ĐÂY ---
     st.markdown("---")
-    st.subheader("📥 Xuất Phiếu Kết Quả Lâm Sàng")
-    top_disease = max(results.items(), key=lambda x: x[1])
-            
-    # --- TÍNH NĂNG XUẤT VÀ TẢI FILE PDF BÁO CÁO ---
     if st.button("📄 Tạo Báo Cáo PDF Chẩn Đoán"):
-        # Gọi hàm tạo PDF đã có sẵn trong source code của bạn
         pdf_output_filename = generate_pdf_report(results, uploaded_file.name, top_disease, doctor_notes)
         
-        # Hiển thị nút Download trực tiếp cho người dùng bấm tải về máy
         with open(pdf_output_filename, "rb") as pdf_file:
             st.download_button(
                 label="📥 Tải xuống File PDF Báo Cáo Bệnh Nhân",
                 data=pdf_file,
-                file_name="Bao_Cao_Y_Tế_XQuang.pdf",
+                file_name="Bao_Cao_Y_Te_XQuang.pdf",
                 mime="application/pdf"
             )
