@@ -193,7 +193,7 @@ if "results" in locals():
         table_data.append([disease, prob * 100, status])
         
     df = pd.DataFrame(table_data, columns=["Dấu hiệu Bệnh lý", "Xác suất (%)", "Trạng thái"])
-    st.dataframe(df[["Dấu hiệu Bệnh lý", "Xác suất (%)", "Trạng thái"]], use_container_width=True, height=250)
+    
         # --- KHU VỰC DÀNH CHO BÁC SĨ ---
     st.markdown("---")
     st.markdown("<div class='sub-header'>👨‍⚕️ TƯƠNG TÁC LÂM SÀNG (DÀNH CHO BÁC SĨ)</div>", unsafe_allow_html=True)
@@ -255,7 +255,7 @@ def generate_pdf_report(results, uploaded_filename, top_prediction, doctor_notes
     # --- TÍNH NĂNG XUẤT VÀ TẢI FILE PDF BÁO CÁO ---
     if st.button("📄 Tạo Báo Cáo PDF Chẩn Đoán"):
         # Gọi hàm tạo PDF đã có sẵn trong source code của bạn
-        pdf_output_filename = generate_pdf_report(results, uploaded_file.name, top_prediction, doctor_notes)
+        pdf_output_filename = generate_pdf_report(results, uploaded_file.name, top_disease, doctor_notes)
         
         # Hiển thị nút Download trực tiếp cho người dùng bấm tải về máy
         with open(pdf_output_filename, "rb") as pdf_file:
