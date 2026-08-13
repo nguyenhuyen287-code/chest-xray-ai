@@ -65,6 +65,38 @@ def run_ai_inference(img):
             results[name] = np.random.uniform(0.01, 0.45)
         main_disease = np.random.choice(disease_names)
         results[main_disease] = np.random.uniform(0.75, 0.98)
+       # Giả lập YOLOv5 quét tìm tổn thương ở một vị trí ngẫu nhiên trong vùng phổi
+        x1 = np.random.randint(int(w*0.1), int(w*0.5))
+        y1 = np.random.randint(int(h*0.2), int(h*0.5))
+        box_w = np.random.randint(int(w*0.15), int(w*0.35))
+        box_h = np.random.randint(int(h*0.2), int(h*0.4))
+
+        cv2.rectangle(img_bbox, (x1, y1), (x1+box_w, y1+box_h), (0, 0, 255), 3)
+        cv2.putText(img_bbox, f"{main_disease} {results[main_disease]*100:.0f}%", (x1, y1-10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+        
+    # TRẢ KẾT QUẢ RA NGOÀI (Dòng này cực kỳ quan trọng)
+    return results
+
+# ==========================================================
+# --- KÍCH HOẠT AI KHI CÓ ẢNH ĐƯỢC TẢI LÊN ---
+if uploaded_file is not None:
+    with st.spinner("Hệ thống đang phân tích ảnh X-quang, vui lòng đợi..."):
+        # Đọc dữ liệu ảnh tùy theo định dạng (DICOM hoặc JPG/PNG)
+        if uploaded_file.name.lower().endswith(('.dcm', '.dicom')):
+            import pydicom
+            dcm_data = pydicom.dcmread(uploaded_file)
+            img_array = dcm_data.pixel_array
+        else:
+            from PIL import Image
+            import numpy as np
+            img_array = np.array(Image.open(uploaded_file).convert('L'))
+            
+        # Gọi hàm AI để lấy kết quả bệnh lý
+        results = run_ai_inference(img_array)
+        
+        # Hiển thị ảnh X-quang lên màn hình cho Bác sĩ xem
+        st.image(img_array, caption="Ảnh X-quang đầu vào", use_container_width=True, clamp=True)
         
         # Giả lập YOLOv5 quét tìm tổn thương ở một vị trí ngẫu nhiên trong vùng phổi
         x1 = np.random.randint(int(w*0.1), int(w*0.5))
