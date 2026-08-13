@@ -157,7 +157,7 @@ if uploaded_file is not None:
 
     if st.button("📄 Tạo Báo Cáo PDF Chẩn Đoán"):
         top_prediction = max(results.items(), key=lambda x: x[1])
-        pdf_output_filename = generate_pdf_report(results, uploaded_file.name, top_disease, doctor_notes)
+        pdf_output_filename = generate_pdf_report(results, uploaded_file.name, top_prediction, doctor_notes)
         
         with open(pdf_output_filename, "rb") as pdf_file:
             st.download_button(
