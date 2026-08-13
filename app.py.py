@@ -95,18 +95,18 @@ def run_ai_inference(img):
 # --- KÍCH HOẠT AI KHI CÓ ẢNH ĐƯỢC TẢI LÊN ---
 if uploaded_file is not None:
     with st.spinner("Hệ thống đang phân tích ảnh X-quang, vui lòng đợi..."):
-        # Đọc dữ liệu ảnh tùy theo định dạng (DICOM hoặc JPG/PNG)
-    if uploaded_file.name.lower().endswith(('.dcm', '.dicom')):
-            import pydicom
-            dcm_data = pydicom.dcmread(uploaded_file)
-            img_array = dcm_data.pixel_array
-        else:
-            from PIL import Image
-            import numpy as np
-            img_array = np.array(Image.open(uploaded_file).convert('L'))
-            
-        # Gọi hàm AI để lấy kết quả bệnh lý VÀ ảnh đã vẽ khung
-        results, img_bbox = run_ai_inference(img_array)
+            # Đọc dữ liệu ảnh tùy theo định dạng (DICOM hoặc JPG/PNG)
+        if uploaded_file.name.lower().endswith(('.dcm', '.dicom')):
+                import pydicom
+                dcm_data = pydicom.dcmread(uploaded_file)
+                img_array = dcm_data.pixel_array
+            else:
+                from PIL import Image
+                import numpy as np
+                img_array = np.array(Image.open(uploaded_file).convert('L'))
+                
+            # Gọi hàm AI để lấy kết quả bệnh lý VÀ ảnh đã vẽ khung
+            results, img_bbox = run_ai_inference(img_array)
         
    # --- TÍNH NĂNG: HIỂN THỊ SONG SONG 2 ẢNH VÀ ĐIỀU CHỈNH KÍCH THƯỚC ---
 st.markdown("### 🔍 So sánh Hình ảnh X-quang")
