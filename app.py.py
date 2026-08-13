@@ -107,33 +107,33 @@ def generate_pdf_report(results, uploaded_filename, top_prediction, doctor_notes
     # Chữ ký
     pdf.set_font("Arial", 'B', 10)
 # --- TẠO BẢNG DỮ LIỆU TỪ KẾT QUẢ AI ---
-if 'results' in locals():
-    table_data = []
-    for disease, prob in results.items():
-        status = "Bất thường" if prob > 0.5 else "Bình thường"
-        table_data.append([disease, prob * 100, status])
-    
-    df = pd.DataFrame(table_data, columns=["Dấu hiệu Bệnh lý", "Xác suất (%)", "Trạng thái"])
-    st.dataframe(df[["Dấu hiệu Bệnh lý", "Xác suất (%)", "Trạng thái"]], use_container_width=True, height=250)
-            
-    # --- KHU VỰC DÀNH CHO BÁC SĨ ---
-    st.markdown("---")
-    st.markdown("<div class='sub-header'>👨‍⚕️ TƯƠNG TÁC LÂM SÀNG (DÀNH CHO BÁC SĨ)</div>", unsafe_allow_html=True)
-    doctor_notes = st.text_area("Nhập ý kiến chẩn đoán chuyên môn của Bác sĩ (Kết luận này sẽ được in trực tiếp vào Báo cáo PDF):", 
-                                placeholder="Ví dụ: Bệnh nhân có tiền sử ho khan, hình ảnh X-quang cho thấy...")
-    
-    # --- TÍCH HỢP XUẤT REPORT PDF NGAY LẬP TỨC ---
-    st.markdown("---")
-    st.subheader("📥 Xuất Phiếu Kết Quả Lâm Sàng")
-    top_disease = max(results.items(), key=lambda x: x[1])
-            
-    if st.button("Tạo File Báo Cáo PDF Chuẩn Bệnh Viện"):
-        pdf_path = generate_pdf_report(results, uploaded_file.name, top_disease, doctor_notes)
-        with open(pdf_path, "rb") as f:
-            # Dòng dưới đây bắt buộc phải thụt lề (1 lần Tab) so với chữ 'with'
-            st.download_button(
-                label="⬇️ Tải xuống Báo Cáo PDF",
-            data=f,
-            file_name="Bao_Cao_X_Quang_Phoi.pdf",
-            mime="application/pdf"
-        )
+    if 'results' in locals():
+        table_data = []
+        for disease, prob in results.items():
+            status = "Bất thường" if prob > 0.5 else "Bình thường"
+            table_data.append([disease, prob * 100, status])
+        
+        df = pd.DataFrame(table_data, columns=["Dấu hiệu Bệnh lý", "Xác suất (%)", "Trạng thái"])
+        st.dataframe(df[["Dấu hiệu Bệnh lý", "Xác suất (%)", "Trạng thái"]], use_container_width=True, height=250)
+                
+        # --- KHU VỰC DÀNH CHO BÁC SĨ ---
+        st.markdown("---")
+        st.markdown("<div class='sub-header'>👨‍⚕️ TƯƠNG TÁC LÂM SÀNG (DÀNH CHO BÁC SĨ)</div>", unsafe_allow_html=True)
+        doctor_notes = st.text_area("Nhập ý kiến chẩn đoán chuyên môn của Bác sĩ (Kết luận này sẽ được in trực tiếp vào Báo cáo PDF):", 
+                                    placeholder="Ví dụ: Bệnh nhân có tiền sử ho khan, hình ảnh X-quang cho thấy...")
+        
+        # --- TÍCH HỢP XUẤT REPORT PDF NGAY LẬP TỨC ---
+        st.markdown("---")
+        st.subheader("📥 Xuất Phiếu Kết Quả Lâm Sàng")
+        top_disease = max(results.items(), key=lambda x: x[1])
+                
+        if st.button("Tạo File Báo Cáo PDF Chuẩn Bệnh Viện"):
+            pdf_path = generate_pdf_report(results, uploaded_file.name, top_disease, doctor_notes)
+            with open(pdf_path, "rb") as f:
+                # Dòng dưới đây bắt buộc phải thụt lề (1 lần Tab) so với chữ 'with'
+                st.download_button(
+                    label="⬇️ Tải xuống Báo Cáo PDF",
+                data=f,
+                file_name="Bao_Cao_X_Quang_Phoi.pdf",
+                mime="application/pdf"
+            )
