@@ -33,26 +33,35 @@ def preprocess_image(img):
 # Khôi phục nút tải ảnh giao diện
 uploaded_file = st.file_uploader("Tải ảnh X-quang lên tại đây (định dạng: JPG, PNG, DCM)", type=["jpg", "png", "jpeg", "dcm", "dicom"])
 def run_ai_inference(img):
-    time.sleep(1.5) # Giả lập thời gian máy chủ AI xử lý
+    import time, hashlib
+    import cv2
+    import numpy as np
     
+    time.sleep(1.5) # Giả lập thời gian máy chủ AI xử lý
+
     # Đọc cấu trúc pixel của ảnh để tạo kết quả ĐỘNG (Ảnh khác nhau -> Kết quả khác nhau)
     img_hash = int(hashlib.md5(img.tobytes()).hexdigest(), 16)
     np.random.seed(img_hash % (2**32))
-    
+
     disease_names = [
-        "Viêm phổi (Pneumonia)", "Tràn dịch màng phổi", "Lao phổi (TB)", 
-        "Tim to (Cardiomegaly)", "Tràn khí màng phổi", "Xẹp phổi (Atelectasis)", 
-        "Khối u / Nốt mờ", "Phù phổi cấp", "COPD / Tăng khí", "Tổn thương hang", 
+        "Viêm phổi (Pneumonia)", "Tràn dịch màng phổi", "Lao phổi (TB)",
+        "Tim to (Cardiomegaly)", "Tràn khí màng phổi", "Xẹp phổi (Atelectasis)",
+        "Khối u / Nốt mờ", "Phù phổi cấp", "COPD / Tăng khí", "Tổn thương hang",
         "Thâm nhiễm mô kẽ", "Xơ hóa phổi"
     ]
-    
+
     results = {}
+    
+    # Đảm bảo ảnh là ảnh xám (2D) trước khi chuyển sang BGR để vẽ khung màu
+    if len(img.shape) > 2:
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        
     img_bbox = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     h, w = img.shape
-
+    
     # Giả lập 40% ảnh đưa vào là Bình thường, 60% là Có bệnh
-    is_healthy = np.random.rand() > 0.6 
-
+    is_healthy = np.random.rand() > 0.6
+    
     if is_healthy:
         # Nếu bình thường: Xác suất tất cả các bệnh đều thấp (< 40%)
         for name in disease_names:
@@ -65,7 +74,8 @@ def run_ai_inference(img):
             results[name] = np.random.uniform(0.01, 0.45)
         main_disease = np.random.choice(disease_names)
         results[main_disease] = np.random.uniform(0.75, 0.98)
-       # Giả lập YOLOv5 quét tìm tổn thương ở một vị trí ngẫu nhiên trong vùng phổi
+        
+        # Giả lập YOLOv5 quét tìm tổn thương ở một vị trí ngẫu nhiên trong vùng phổi
         x1 = np.random.randint(int(w*0.1), int(w*0.5))
         y1 = np.random.randint(int(h*0.2), int(h*0.5))
         box_w = np.random.randint(int(w*0.15), int(w*0.35))
@@ -74,9 +84,9 @@ def run_ai_inference(img):
         cv2.rectangle(img_bbox, (x1, y1), (x1+box_w, y1+box_h), (0, 0, 255), 3)
         cv2.putText(img_bbox, f"{main_disease} {results[main_disease]*100:.0f}%", (x1, y1-10),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-        
-    # TRẢ KẾT QUẢ RA NGOÀI (Dòng này cực kỳ quan trọng)
-    return results
+                    
+    # TRẢ KẾT QUẢ TỪ HÀM AI RA NGOÀI
+    return results, img_bbox
 
 # ==========================================================
 # --- KÍCH HOẠT AI KHI CÓ ẢNH ĐƯỢC TẢI LÊN ---
@@ -92,23 +102,11 @@ if uploaded_file is not None:
             import numpy as np
             img_array = np.array(Image.open(uploaded_file).convert('L'))
             
-        # Gọi hàm AI để lấy kết quả bệnh lý
-        results = run_ai_inference(img_array)
+        # Gọi hàm AI để lấy kết quả bệnh lý VÀ ảnh đã vẽ khung
+        results, img_bbox = run_ai_inference(img_array)
         
-        # Hiển thị ảnh X-quang lên màn hình cho Bác sĩ xem
-        st.image(img_array, caption="Ảnh X-quang đầu vào", use_container_width=True, clamp=True)
-        
-        # Giả lập YOLOv5 quét tìm tổn thương ở một vị trí ngẫu nhiên trong vùng phổi
-        x1 = np.random.randint(int(w*0.1), int(w*0.5))
-        y1 = np.random.randint(int(h*0.2), int(h*0.5))
-        box_w = np.random.randint(int(w*0.15), int(w*0.35))
-        box_h = np.random.randint(int(h*0.2), int(h*0.4))
-        
-        cv2.rectangle(img_bbox, (x1, y1), (x1+box_w, y1+box_h), (0, 0, 255), 3)
-        cv2.putText(img_bbox, f"{main_disease} {results[main_disease]*100:.0f}%", (x1, y1-10), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-    
-        return results, img_bbox
+        # Hiển thị ảnh X-quang ĐÃ VẼ KHUNG lên màn hình cho Bác sĩ xem
+        st.image(img_bbox, caption="Ảnh X-quang đầu vào (đã phân tích)", use_container_width=True, clamp=True)
 
 # ==========================================
 # 3. HÀM TẠO REPORT PDF (CHUẨN MẪU BỆNH VIỆT - HÀN)
