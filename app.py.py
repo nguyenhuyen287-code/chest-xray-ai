@@ -31,7 +31,7 @@ def preprocess_image(img):
     return img_enhanced
 
 # Khôi phục nút tải ảnh giao diện
-uploaded_file = st.file_uploader("Tải ảnh X-quang lên tại đây (định dạng: JPG, PNG)", type=["jpg", "png", "jpeg"])
+uploaded_file = st.file_uploader("Tải ảnh X-quang lên tại đây (định dạng: JPG, PNG, DCM)", type=["jpg", "png", "jpeg", "dcm", "dicom"])
 def run_ai_inference(img):
     time.sleep(1.5) # Giả lập thời gian máy chủ AI xử lý
     
