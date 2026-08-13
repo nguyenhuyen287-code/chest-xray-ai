@@ -70,7 +70,7 @@ def run_ai_inference(img):
         for name in disease_names:
             results[name] = np.random.uniform(0.01, 0.39)
         # Báo chữ xanh bình thường, KHÔNG vẽ Bounding Box
-        cv2.putText(img_bbox, "PHOI BINH THUONG (Khong phat hien ton thuong)", (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 3)
+        cv2.putText(img_bbox, "PHOI BINH THUONG (Khong phat hien ton thuong)", (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 7, (0, 255, 2), 3)
     else:
         # Nếu có bệnh: Quét và đẩy xác suất 1 bệnh ngẫu nhiên lên cao (> 70%)
         for name in disease_names:
