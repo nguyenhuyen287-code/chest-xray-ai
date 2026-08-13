@@ -100,7 +100,7 @@ if uploaded_file is not None:
                 import pydicom
                 dcm_data = pydicom.dcmread(uploaded_file)
                 img_array = dcm_data.pixel_array
-            else:
+        else:
                 from PIL import Image
                 import numpy as np
                 img_array = np.array(Image.open(uploaded_file).convert('L'))
