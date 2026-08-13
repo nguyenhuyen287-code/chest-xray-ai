@@ -156,7 +156,7 @@ if uploaded_file is not None:
     doctor_notes = st.text_area("Nhập ý kiến chẩn đoán chuyên môn của Bác sĩ...", placeholder="Ví dụ: Bệnh nhân có tiền sử ho khan, hình ảnh X-quang cho thấy...")
 
     if st.button("📄 Tạo Báo Cáo PDF Chẩn Đoán"):
-        top_disease = max(results.items(), key=lambda x: x[1])
+        top_prediction = max(results.items(), key=lambda x: x[1])
         pdf_output_filename = generate_pdf_report(results, uploaded_file.name, top_disease, doctor_notes)
         
         with open(pdf_output_filename, "rb") as pdf_file:
