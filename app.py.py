@@ -96,7 +96,7 @@ def run_ai_inference(img):
 if uploaded_file is not None:
     with st.spinner("Hệ thống đang phân tích ảnh X-quang, vui lòng đợi..."):
         # Đọc dữ liệu ảnh tùy theo định dạng (DICOM hoặc JPG/PNG)
-        if uploaded_file.name.lower().endswith(('.dcm', '.dicom')):
+    if uploaded_file.name.lower().endswith(('.dcm', '.dicom')):
             import pydicom
             dcm_data = pydicom.dcmread(uploaded_file)
             img_array = dcm_data.pixel_array
