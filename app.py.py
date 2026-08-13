@@ -111,12 +111,12 @@ def generate_pdf_report(results, uploaded_filename, top_prediction, doctor_notes
         
         # --- KHU VỰC DÀNH CHO BÁC SĨ ---
     st.markdown("---")
-        st.markdown("<div class='sub-header'>👨‍⚕️ TƯƠNG TÁC LÂM SÀNG (DÀNH CHO BÁC SĨ)</div>", unsafe_allow_html=True)
+    st.markdown("<div class='sub-header'>👨‍⚕️ TƯƠNG TÁC LÂM SÀNG (DÀNH CHO BÁC SĨ)</div>", unsafe_allow_html=True)
         doctor_notes = st.text_area("Nhập ý kiến chẩn đoán chuyên môn của Bác sĩ (Kết luận này sẽ được in trực tiếp vào Báo cáo PDF):", 
                                     placeholder="Ví dụ: Bệnh nhân có tiền sử ho khan, hình ảnh X-quang cho thấy...")
 
         # --- TÍCH HỢP XUẤT REPORT PDF NGAY LẬP TỨC ---
-        st.markdown("---")
+    st.markdown("---")
         st.subheader("📥 Xuất Phiếu Kết Quả Lâm Sàng")
         top_disease = max(results.items(), key=lambda x: x[1])
         
