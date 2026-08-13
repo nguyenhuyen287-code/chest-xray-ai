@@ -95,20 +95,20 @@ def run_ai_inference(img):
 # --- KÍCH HOẠT AI KHI CÓ ẢNH ĐƯỢC TẢI LÊN ---
 if uploaded_file is not None:
     with st.spinner("Hệ thống đang phân tích ảnh X-quang, vui lòng đợi..."):
-            # Đọc dữ liệu ảnh tùy theo định dạng (DICOM hoặc JPG/PNG)
+        # Đọc dữ liệu ảnh tùy theo định dạng (DICOM hoặc JPG/PNG)
         if uploaded_file.name.lower().endswith(('.dcm', '.dicom')):
-                import pydicom
-                dcm_data = pydicom.dcmread(uploaded_file)
-                img_array = dcm_data.pixel_array
+            import pydicom
+            dcm_data = pydicom.dcmread(uploaded_file)
+            img_array = dcm_data.pixel_array
         else:
-                from PIL import Image
-                import numpy as np
-                img_array = np.array(Image.open(uploaded_file).convert('L'))
-                
-            # Gọi hàm AI để lấy kết quả bệnh lý VÀ ảnh đã vẽ khung
-                results, img_bbox = run_ai_inference(img_array)
+            from PIL import Image
+            import numpy as np
+            img_array = np.array(Image.open(uploaded_file).convert('L'))
+            
+        # Gọi hàm AI để lấy kết quả bệnh lý VÀ ảnh đã vẽ khung
+        results, img_bbox = run_ai_inference(img_array)
         
-   # --- TÍNH NĂNG: HIỂN THỊ SONG SONG 2 ẢNH VÀ ĐIỀU CHỈNH KÍCH THƯỚC ---
+    # --- PHẦN HIỂN THỊ GIAO DIỆN (NẰM TRONG KHỐI if uploaded_file is not None) ---
     st.markdown("### 🔍 So sánh Hình ảnh X-quang")
     img_width = st.slider("Điều chỉnh kích thước hiển thị hình ảnh:", min_value=200, max_value=1000, value=500, step=50)
     
@@ -123,18 +123,17 @@ if uploaded_file is not None:
         
     st.markdown("---")
     st.markdown("### 📊 Bảng Chi Tiết Kết Quả Phân Tích AI")
-    
-    # --- TÍNH NĂNG: TÔ MÀU BẢNG KẾT QUẢ THEO MỨC ĐỘ ---
+
     def color_coding(val):
         if isinstance(val, float):
             if val > 70:
-                return 'background-color: #ffcccc; color: #990000; font-weight: bold;' # Đỏ: Nguy cơ cao
+                return 'background-color: #ffcccc; color: #990000; font-weight: bold;'
             elif val > 40:
-                return 'background-color: #ffe680; color: #996600; font-weight: bold;' # Vàng: Nguy cơ trung bình
+                return 'background-color: #ffe680; color: #996600; font-weight: bold;'
             else:
-                return 'background-color: #d9ffd9; color: #006600;' # Xanh lá: Bình thường
+                return 'background-color: #d9ffd9; color: #006600;'
         return ''
-    
+
     table_data = []
     for disease, prob in results.items():
         p_val = prob * 100
@@ -144,9 +143,8 @@ if uploaded_file is not None:
             status = "Nguy cơ trung bình"
         else:
             status = "Bình thường"
-            
         table_data.append([disease, round(p_val, 2), status])
-    
+
     df = pd.DataFrame(table_data, columns=["Dấu hiệu Bệnh lý", "Xác suất (%)", "Trạng thái"])
     styled_df = df.style.applymap(color_coding, subset=["Xác suất (%)"])
     st.dataframe(styled_df, use_container_width=True, height=300)
