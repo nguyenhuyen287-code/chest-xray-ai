@@ -19,11 +19,18 @@ def remove_accents(input_str):
 
 # ==========================================
 # 1. CẤU HÌNH TRANG WEB (CONFIG)
-# ... existing code ...
+st.set_page_config(page_title="AI X-quang Phổi", layout="wide")
+st.title("🫁 Hệ thống AI Hỗ trợ Phân tích X-quang Phổi")
+st.markdown("Vui lòng tải ảnh X-quang của bệnh nhân lên để hệ thống xử lý.")
+
+# Khôi phục hàm xử lý ảnh bị mất tên
+def preprocess_image(img):
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
     img_enhanced = clahe.apply(img)
     return img_enhanced
 
+# Khôi phục nút tải ảnh giao diện
+uploaded_file = st.file_uploader("Tải ảnh X-quang lên tại đây (định dạng: JPG, PNG)", type=["jpg", "png", "jpeg"])
 def run_ai_inference(img):
     time.sleep(1.5) # Giả lập thời gian máy chủ AI xử lý
     
