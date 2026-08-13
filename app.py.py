@@ -252,13 +252,16 @@ def generate_pdf_report(results, uploaded_filename, top_prediction, doctor_notes
     st.subheader("📥 Xuất Phiếu Kết Quả Lâm Sàng")
     top_disease = max(results.items(), key=lambda x: x[1])
             
-    if st.button("Tạo File Báo Cáo PDF Chuẩn Bệnh Viện"):
-            pdf_path = generate_pdf_report(results, uploaded_file.name, top_disease, doctor_notes)
-            with open(pdf_path, "rb") as f:
-                # Dòng dưới đây bắt buộc phải thụt lề (1 lần Tab) so với chữ 'with'
-                st.download_button(
-                    label="⬇️ Tải xuống Báo Cáo PDF",
-                data=f,
-                file_name="Bao_Cao_X_Quang_Phoi.pdf",
+    # --- TÍNH NĂNG XUẤT VÀ TẢI FILE PDF BÁO CÁO ---
+    if st.button("📄 Tạo Báo Cáo PDF Chẩn Đoán"):
+        # Gọi hàm tạo PDF đã có sẵn trong source code của bạn
+        pdf_output_filename = generate_pdf_report(results, uploaded_file.name, top_prediction, doctor_notes)
+        
+        # Hiển thị nút Download trực tiếp cho người dùng bấm tải về máy
+        with open(pdf_output_filename, "rb") as pdf_file:
+            st.download_button(
+                label="📥 Tải xuống File PDF Báo Cáo Bệnh Nhân",
+                data=pdf_file,
+                file_name="Bao_Cao_Y_Tế_XQuang.pdf",
                 mime="application/pdf"
             )
