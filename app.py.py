@@ -108,48 +108,48 @@ if uploaded_file is not None:
             # Gọi hàm AI để lấy kết quả bệnh lý VÀ ảnh đã vẽ khung
                 results, img_bbox = run_ai_inference(img_array)
         
-       # --- TÍNH NĂNG: HIỂN THỊ SONG SONG 2 ẢNH VÀ ĐIỀU CHỈNH KÍCH THƯỚC ---
-    st.markdown("### 🔍 So sánh Hình ảnh X-quang")
-    img_width = st.slider("Điều chỉnh kích thước hiển thị hình ảnh:", min_value=200, max_value=1000, value=500, step=50)
+   # --- TÍNH NĂNG: HIỂN THỊ SONG SONG 2 ẢNH VÀ ĐIỀU CHỈNH KÍCH THƯỚC ---
+st.markdown("### 🔍 So sánh Hình ảnh X-quang")
+img_width = st.slider("Điều chỉnh kích thước hiển thị hình ảnh:", min_value=200, max_value=1000, value=500, step=50)
+
+col1, col2 = st.columns(2)
+with col1:
+    st.markdown("**1. Hình ảnh gốc**")
+    st.image(img_array, caption="Ảnh đầu vào", width=img_width, clamp=True)
     
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("**1. Hình ảnh gốc**")
-        st.image(img_array, caption="Ảnh đầu vào", width=img_width, clamp=True)
-        
-    with col2:
-        st.markdown("**2. Hình ảnh AI phân tích tổn thương**")
-        st.image(img_bbox, caption="Ảnh có định vị vùng nghi ngờ", width=img_width)
-        
-    st.markdown("---")
-    st.markdown("### 📊 Bảng Chi Tiết Kết Quả Phân Tích AI")
+with col2:
+    st.markdown("**2. Hình ảnh AI phân tích tổn thương**")
+    st.image(img_bbox, caption="Ảnh có định vị vùng nghi ngờ", width=img_width)
     
-    # --- TÍNH NĂNG: TÔ MÀU BẢNG KẾT QUẢ THEO MỨC ĐỘ ---
-    def color_coding(val):
-        if isinstance(val, float):
-            if val > 70:
-                return 'background-color: #ffcccc; color: #990000; font-weight: bold;' # Đỏ: Nguy cơ cao
-            elif val > 40:
-                return 'background-color: #ffe680; color: #996600; font-weight: bold;' # Vàng: Nguy cơ trung bình
-            else:
-                return 'background-color: #d9ffd9; color: #006600;' # Xanh lá: Bình thường
-        return ''
-    
-    table_data = []
-    for disease, prob in results.items():
-        p_val = prob * 100
-        if p_val > 70:
-            status = "Nguy cơ cao (Bất thường)"
-        elif p_val > 40:
-            status = "Nguy cơ trung bình"
+st.markdown("---")
+st.markdown("### 📊 Bảng Chi Tiết Kết Quả Phân Tích AI")
+
+# --- TÍNH NĂNG: TÔ MÀU BẢNG KẾT QUẢ THEO MỨC ĐỘ ---
+def color_coding(val):
+    if isinstance(val, float):
+        if val > 70:
+            return 'background-color: #ffcccc; color: #990000; font-weight: bold;' # Đỏ: Nguy cơ cao
+        elif val > 40:
+            return 'background-color: #ffe680; color: #996600; font-weight: bold;' # Vàng: Nguy cơ trung bình
         else:
-            status = "Bình thường"
-            
-        table_data.append([disease, round(p_val, 2), status])
-    
-    df = pd.DataFrame(table_data, columns=["Dấu hiệu Bệnh lý", "Xác suất (%)", "Trạng thái"])
-    styled_df = df.style.applymap(color_coding, subset=["Xác suất (%)"])
-    st.dataframe(styled_df, use_container_width=True, height=300)
+            return 'background-color: #d9ffd9; color: #006600;' # Xanh lá: Bình thường
+    return ''
+
+table_data = []
+for disease, prob in results.items():
+    p_val = prob * 100
+    if p_val > 70:
+        status = "Nguy cơ cao (Bất thường)"
+    elif p_val > 40:
+        status = "Nguy cơ trung bình"
+    else:
+        status = "Bình thường"
+        
+    table_data.append([disease, round(p_val, 2), status])
+
+df = pd.DataFrame(table_data, columns=["Dấu hiệu Bệnh lý", "Xác suất (%)", "Trạng thái"])
+styled_df = df.style.applymap(color_coding, subset=["Xác suất (%)"])
+st.dataframe(styled_df, use_container_width=True, height=300)
 
 # ==========================================
 # 3. HÀM TẠO REPORT PDF (CHUẨN MẪU BỆNH VIỆT - HÀN)
